@@ -1,0 +1,63 @@
+apt-metalink
+============
+
+apt-metalink allows you to download deb packages from several sources
+concurrently and makes upgrade process faster -- if you have fast
+internet connection ;)
+apt-metalink uses python-apt to interface apt infrastructure.
+
+Prerequisites
+-------------
+
+apt-metalink uses aria2 as downloader.
+You can install aria2 using:
+
+    apt-get install aria2
+
+I strongly recommend to use the latest release of aria2. The latest
+version of aria2 is 1.10.3 at the time of writing.
+You can download aria2 from http://aria2.sourceforge.net/
+
+Edit sources.list
+-----------------
+
+sources.list is ususally located at /etc/apt/sources.list.  Add
+several fast debian mirror server to it.  Don't add slow mirror. It
+voids the power of apt-metalink.  For example, adding 3 debian mirror:
+
+  deb http://MIRROR1/debian/ unstable main contrib non-free
+  deb http://MIRROR2/debian/ unstable main contrib non-free
+  deb http://MIRROR3/debian/ unstable main contrib non-free
+
+See sources.list(5) for more details.
+
+apt-metalink uses them all and download packages concurrently, which
+makes faster download.
+
+Currently, apt-metalink passes the number of mirrors as -j option to
+aria2c.
+
+Usage
+-----
+
+  Usage: apt-metalink [options] {upgrade | dist-upgrade | install pkg ...}
+
+  Options:
+    -h, --help            show this help message and exit
+    -x ARIA2C, --aria2c=ARIA2C
+                          path to aria2c executable [default: /usr/bin/aria2c]
+
+Currently, apt-metalink offers very basic subset of features that
+apt-get has. But I think this is enough to see what apt-metalink
+offers and its possibility.
+
+License
+-------
+
+GPLv3
+
+References
+----------
+
+ * http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=500653
+ * https://bugs.launchpad.net/ubuntu/+source/apt/+bug/275994
