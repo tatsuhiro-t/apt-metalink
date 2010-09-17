@@ -1,0 +1,188 @@
+#!/usr/bin/python2.6
+import os.path
+import subprocess
+import hashlib
+import textwrap
+import sys
+import optparse
+import apt
+import apt_pkg
+
+class AptMetalink:
+
+    def __init__(self, opts):
+        self.cache = apt.Cache(apt.progress.text.OpProgress())
+        self.opts = opts
+        self.archive_dir = apt_pkg.config.find_dir('Dir::Cache::Archives')
+        if not self.archive_dir:
+            raise Exception(('No archive dir is set.'
+                             ' Usually it is /var/cache/apt/archives/'))
+
+    def upgrade(self, dist_upgrade=False):
+        self.cache.upgrade(dist_upgrade=dist_upgrade)
+        self._get_changes()
+
+    def install(self, pkg_names):
+        for pkg_name in pkg_names:
+            if pkg_name in self.cache:
+                pkg = self.cache[pkg_name]
+                if not pkg.installed:
+                    pkg.mark_install()
+            else:
+                raise Exception('{0} is not found'.format(pkg_name))
+            self._get_changes()
+
+    def _get_changes(self):
+        pkgs = self.cache.get_changes()
+        if not pkgs:
+            print "Nothing to do."
+            return
+        print_update_summary(self.cache)
+        pkgs = [pkg for pkg in pkgs if self._need_download(pkg)]
+        if pkgs:
+            sys.stdout.write("Do you want to continue [Y/n]?")
+            ans = sys.stdin.readline().strip()
+            if ans and ans.lower() != 'y':
+                print "Abort."
+                return
+            if not self._download(pkgs, num_concurrent=guess_concurrent(pkgs)):
+                print "Some download fails. apt_pkg will take care of them."
+        self.cache.commit()
+
+    def _download(self, pkgs, num_concurrent=1):
+        proc = subprocess.Popen(
+            [self.opts.aria2c,
+             '--metalink-file=-',
+             '--file-allocation=none',
+             '--check-integrity=true',
+             '--dir={0}'.format(self.archive_dir),
+             '--max-concurrent-downloads={0}'.format(num_concurrent),
+             '--no-conf'
+             ],
+            stdin=subprocess.PIPE,
+            stdout=1,
+            stderr=2)
+        make_metalink(proc.stdin, pkgs)
+        proc.stdin.close()
+        proc.wait()
+        return proc.returncode == 0
+
+    def _need_download(self, pkg):
+        if pkg.marked_delete:
+            return False
+        version = pkg.candidate
+        hashtype, hashvalue = get_hash(version)
+        filepath = os.path.join(self.archive_dir, get_filename(version))
+        if os.path.exists(filepath):
+            # TODO wrap try...except
+            with open(filepath) as f:
+                hashfunc = hashlib.new(hashtype)
+                while True:
+                    bytes = f.read(4096)
+                    if not bytes:
+                        break
+                    hashfunc.update(bytes)
+                return hashfunc.hexdigest() != hashvalue
+        return True
+
+def get_hash(version):
+    if version.sha256:
+        return ("sha256", version.sha256)
+    elif version.sha1:
+        return ("sha1", version.sha1)
+    elif version.md5:
+        return ("md5", version.md5)
+    else:
+        return (None, None)
+
+def get_filename(version):
+    # TODO apt-get man page said filename and basename in URI
+    # could be different.
+    return os.path.basename(version.filename)
+
+def make_metalink(out, pkgs):
+    out.write('<?xml version="1.0" encoding="UTF-8"?>')
+    out.write('<metalink xmlns="urn:ietf:params:xml:ns:metalink">')
+    for pkg in pkgs:
+        version = pkg.candidate
+        hashtype, hashvalue = get_hash(version)
+        out.write('<file name="{0}">'.format(get_filename(version)))
+        out.write('<size>{0}</size>'.format(version.size))
+        if hashtype:
+            out.write('<hash type="{0}">{1}</hash>'.format(hashtype, hashvalue))
+        for uri in version.uris:
+            out.write('<url priority="1">{0}</url>'.format(uri))
+        out.write('  </file>')
+    out.write('</metalink>')
+
+def guess_concurrent(pkgs):
+    max_uris = 0
+    for pkg in pkgs:
+        version = pkg.candidate
+        max_uris = max(len(version.uris), max_uris)
+    return max_uris
+
+def pprint_names(msg, names):
+    if names:
+        names.sort()
+        print msg
+        print textwrap.fill(' '.join(names),
+                            initial_indent='  ',
+                            subsequent_indent='  ',
+                            break_long_words=False,
+                            break_on_hyphens=False)
+
+def print_update_summary(cache):
+    delete_names = []
+    install_names = []
+    upgrade_names = []
+    # TODO marked_downgrade, marked_keep, marked_reinstall
+    for pkg in cache.get_changes():
+        if pkg.marked_delete:
+            delete_names.append(pkg.name)
+        elif pkg.marked_install:
+            install_names.append(pkg.name)
+        elif pkg.marked_upgrade:
+            upgrade_names.append(pkg.name)
+    pprint_names('The following packages will be REMOVED:', delete_names)
+    pprint_names('The following NEW packages will be installed:', install_names)
+    pprint_names('The following packages will be upgraded:', upgrade_names)
+    print ('{0} upgraded, {1} newly installed, {2} to remove and'
+           ' {3} not upgraded')\
+           .format(len(upgrade_names), len(install_names), len(delete_names),
+                   cache.keep_count)
+    print 'Need to get {0:.1f}MB of archives.'\
+        .format(cache.required_download/1000/1000)
+    if cache.required_space < 0:
+        print ('After this operation, {0:.1f}MB disk space will be freed.'\
+                   .format(-cache.required_space/1000/1000))
+    else:
+        print ('After this operation, {0:.1f}MB of additional disk space will'
+               ' be used.').format(cache.required_space/1000/1000)
+
+def main():
+    usage = 'Usage: %prog [options] {upgrade | dist-upgrade | install pkg ...}'
+    parser = optparse.OptionParser(usage=usage)
+    parser.add_option('-x', '--aria2c' ,dest='aria2c',
+                      help="path to aria2c executable [default: %default]")
+    parser.set_defaults(aria2c='/usr/bin/aria2c')
+    opts, args = parser.parse_args()
+
+    if not args:
+        print 'No command is given.'
+        parser.print_usage()
+        exit(1)
+
+    command = args[0]
+    am = AptMetalink(opts)
+    if command == 'upgrade':
+        am.upgrade()
+    elif command == 'dist-upgrade':
+        am.upgrade(dist_upgrade=True)
+    elif command == 'install':
+        am.install(args[1:])
+    else:
+        print "Command {0} is not supported."
+
+if __name__ == '__main__':
+    main()
