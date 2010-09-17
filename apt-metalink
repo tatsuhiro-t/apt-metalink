@@ -75,7 +75,8 @@ class AptMetalink:
              '--dir={0}'.format(self.archive_dir),
              '--max-concurrent-downloads={0}'.format(num_concurrent),
              '--no-conf',
-             '--split=1' # For 1.9.x release.
+             '--split=1',           # For 1.9.x release.
+             '--metalink-servers=1' # For 1.9.x release.
              ],
             stdin=subprocess.PIPE,
             stdout=1,
