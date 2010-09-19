@@ -214,7 +214,7 @@ def main():
     elif command == 'install':
         am.install(args[1:])
     else:
-        print "Command {0} is not supported."
+        print "Command {0} is not supported.".format(command)
 
 if __name__ == '__main__':
     main()
