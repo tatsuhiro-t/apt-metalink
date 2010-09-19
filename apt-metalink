@@ -53,11 +53,9 @@ class AptMetalink:
 
     def _get_changes(self):
         pkgs = self.cache.get_changes()
-        if not pkgs:
-            print "Nothing to do."
-            return
-        print_update_summary(self.cache)
-        pkgs = [pkg for pkg in pkgs if self._need_download(pkg)]
+        if pkgs:
+            print_update_summary(self.cache)
+            pkgs = [pkg for pkg in pkgs if self._need_download(pkg)]
         if pkgs:
             sys.stdout.write("Do you want to continue [Y/n]?")
             ans = sys.stdin.readline().strip()
@@ -66,7 +64,10 @@ class AptMetalink:
                 return
             if not self._download(pkgs, num_concurrent=guess_concurrent(pkgs)):
                 print "Some download fails. apt_pkg will take care of them."
-        self.cache.commit()
+        if self.opts.download_only:
+            print "Download complete and in download only mode"
+        else:
+            self.cache.commit()
 
     def _download(self, pkgs, num_concurrent=1):
         proc = subprocess.Popen(
@@ -184,8 +185,12 @@ def print_update_summary(cache):
 def main():
     usage = 'Usage: %prog [options] {upgrade | dist-upgrade | install pkg ...}'
     parser = optparse.OptionParser(usage=usage)
+    parser.add_option('-d', '--download-only', action='store_true',
+                      help="Download only. [default: %default]")
     parser.add_option('-x', '--aria2c' ,dest='aria2c',
                       help="path to aria2c executable [default: %default]")
+
+    parser.set_defaults(download_only=False)
     parser.set_defaults(aria2c='/usr/bin/aria2c')
     opts, args = parser.parse_args()
 
