@@ -49,7 +49,7 @@ class AptMetalink:
                     pkg.mark_upgrade()
             else:
                 raise Exception('{0} is not found'.format(pkg_name))
-            self._get_changes()
+        self._get_changes()
 
     def _get_changes(self):
         pkgs = self.cache.get_changes()
