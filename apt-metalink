@@ -56,6 +56,9 @@ class AptMetalink:
         if pkgs:
             print_update_summary(self.cache)
             pkgs = [pkg for pkg in pkgs if self._need_download(pkg)]
+        if self.opts.print_metalink:
+            make_metalink(sys.stdout, pkgs)
+            return
         if pkgs:
             sys.stdout.write("Do you want to continue [Y/n]?")
             ans = sys.stdin.readline().strip()
@@ -134,7 +137,7 @@ def make_metalink(out, pkgs):
             out.write('<hash type="{0}">{1}</hash>'.format(hashtype, hashvalue))
         for uri in version.uris:
             out.write('<url priority="1">{0}</url>'.format(uri))
-        out.write('  </file>')
+        out.write('</file>')
     out.write('</metalink>')
 
 def guess_concurrent(pkgs):
@@ -187,10 +190,13 @@ def main():
     parser = optparse.OptionParser(usage=usage)
     parser.add_option('-d', '--download-only', action='store_true',
                       help="Download only. [default: %default]")
+    parser.add_option('--print-metalink', action='store_true',
+                      help="Instead of fetching the files, Metalink XML document is printed. Metalink XML document contains package's URIs and checksums.")
     parser.add_option('-x', '--aria2c' ,dest='aria2c',
                       help="path to aria2c executable [default: %default]")
 
     parser.set_defaults(download_only=False)
+    parser.set_defaults(print_metalink=False)
     parser.set_defaults(aria2c='/usr/bin/aria2c')
     opts, args = parser.parse_args()
 
