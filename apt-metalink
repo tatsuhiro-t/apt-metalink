@@ -45,6 +45,8 @@ class AptMetalink:
                 pkg = self.cache[pkg_name]
                 if not pkg.installed:
                     pkg.mark_install()
+                elif pkg.is_upgradable:
+                    pkg.mark_upgrade()
             else:
                 raise Exception('{0} is not found'.format(pkg_name))
             self._get_changes()
