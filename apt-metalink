@@ -55,15 +55,14 @@ class AptMetalink:
         pkgs = self.cache.get_changes()
         if pkgs:
             print_update_summary(self.cache)
-            pkgs = [pkg for pkg in pkgs if self._need_download(pkg)]
-        if self.opts.print_metalink:
-            make_metalink(sys.stdout, pkgs)
-            return
-        if pkgs:
             sys.stdout.write("Do you want to continue [Y/n]?")
             ans = sys.stdin.readline().strip()
             if ans and ans.lower() != 'y':
                 print "Abort."
+                return
+            pkgs = [pkg for pkg in pkgs if self._need_download(pkg)]
+            if self.opts.print_metalink:
+                make_metalink(sys.stdout, pkgs)
                 return
             if not self._download(pkgs, num_concurrent=guess_concurrent(pkgs)):
                 print "Some download fails. apt_pkg will take care of them."
@@ -73,6 +72,8 @@ class AptMetalink:
             self.cache.commit()
 
     def _download(self, pkgs, num_concurrent=1):
+        if not pkgs:
+            return True
         proc = subprocess.Popen(
             [self.opts.aria2c,
              '--metalink-file=-',
