@@ -44,6 +44,10 @@ Usage
 
   Options:
     -h, --help            show this help message and exit
+    -d, --download-only   Download only. [default: False]
+    --print-metalink      Instead of fetching the files, Metalink XML document
+                          is printed. Metalink XML document contains package's
+                          URIs and checksums.
     -x ARIA2C, --aria2c=ARIA2C
                           path to aria2c executable [default: /usr/bin/aria2c]
 
