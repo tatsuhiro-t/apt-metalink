@@ -1,4 +1,4 @@
-#!/usr/bin/python2.6
+#!/usr/bin/python
 #
 # apt-metalink - Download deb packages from multiple servers concurrently
 # Copyright (C) 2010 Tatsuhiro Tsujikawa
