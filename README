@@ -3,8 +3,9 @@ apt-metalink
 
 apt-metalink allows you to download deb packages from several sources
 concurrently and makes upgrade process faster -- if you have fast
-internet connection ;)
-apt-metalink uses python-apt to interface apt infrastructure.
+internet connection ;) apt-metalink uses python-apt to interface apt
+infrastructure and aria2 as download back-end. Metalink is used to
+feed package list to aria2.
 
 Prerequisites
 -------------
@@ -65,3 +66,4 @@ References
 
  * http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=500653
  * https://bugs.launchpad.net/ubuntu/+source/apt/+bug/275994
+ * http://tools.ietf.org/html/rfc5854 The Metalink Download Description Format
