@@ -113,16 +113,20 @@ class AptMetalink:
         hashtype, hashvalue = get_hash(version)
         filepath = os.path.join(self.archive_dir, get_filename(version))
         if os.path.exists(filepath):
-            # TODO wrap try...except
-            with open(filepath) as f:
-                hashfunc = hashlib.new(hashtype)
-                while True:
-                    bytes = f.read(4096)
-                    if not bytes:
-                        break
-                    hashfunc.update(bytes)
-                return hashfunc.hexdigest() != hashvalue
-        return True
+            try:
+                with open(filepath) as f:
+                    hashfunc = hashlib.new(hashtype)
+                    while True:
+                        bytes = f.read(4096)
+                        if not bytes:
+                            break
+                        hashfunc.update(bytes)
+                    return hashfunc.hexdigest() != hashvalue
+            except IOError, e:
+                print "Error", e
+                return False
+        else:
+            return True
 
 def get_hash(version):
     if version.sha256:
