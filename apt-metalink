@@ -74,8 +74,8 @@ class AptMetalink:
     def _download(self, pkgs, num_concurrent=1):
         if not pkgs:
             return True
-        proc = subprocess.Popen(
-            [self.opts.aria2c,
+
+        cmdline = [self.opts.aria2c,
              '--metalink-file=-',
              '--file-allocation=none',
              '--check-integrity=true',
@@ -84,10 +84,23 @@ class AptMetalink:
              '--no-conf',
              '--split=1',           # For 1.9.x release.
              '--metalink-servers=1' # For 1.9.x release.
-             ],
-            stdin=subprocess.PIPE,
-            stdout=1,
-            stderr=2)
+             ]
+
+        http_proxy = apt_pkg.config.find('Acquire::http::Proxy')
+        https_proxy = apt_pkg.config.find('Acquire::https::Proxy', http_proxy)
+        ftp_proxy = apt_pkg.config.find('Acquire::ftp::Proxy')
+
+        if http_proxy:
+            cmdline.append('='.join(['--http-proxy', http_proxy]))
+        if https_proxy:
+            cmdline.append('='.join(['--https-proxy', https_proxy]))
+        if ftp_proxy:
+            cmdline.append('='.join(['--ftp-proxy', ftp_proxy]))
+
+        proc = subprocess.Popen(cmdline,
+                                stdin=subprocess.PIPE,
+                                stdout=1,
+                                stderr=2)
         make_metalink(proc.stdin, pkgs)
         proc.stdin.close()
         proc.wait()
