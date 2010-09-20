@@ -205,7 +205,9 @@ def main():
     parser.add_option('-d', '--download-only', action='store_true',
                       help="Download only. [default: %default]")
     parser.add_option('--print-metalink', action='store_true',
-                      help="Instead of fetching the files, Metalink XML document is printed. Metalink XML document contains package's URIs and checksums.")
+                      help=("Instead of fetching the files, Metalink XML"
+                            " document is printed. Metalink XML document"
+                            " contains package's URIs and checksums."))
     parser.add_option('-x', '--aria2c' ,dest='aria2c',
                       help="path to aria2c executable [default: %default]")
 
