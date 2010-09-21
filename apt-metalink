@@ -18,7 +18,6 @@
 
 import os.path
 import subprocess
-import hashlib
 import textwrap
 import sys
 import optparse
