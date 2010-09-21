@@ -21,6 +21,8 @@ import subprocess
 import textwrap
 import sys
 import optparse
+import errno
+
 import apt
 import apt_pkg
 
@@ -73,14 +75,17 @@ class AptMetalink:
     def _download(self, pkgs, num_concurrent=1):
         if not pkgs:
             return True
-
+        partial_dir = os.path.join(self.archive_dir, 'partial')
         cmdline = [self.opts.aria2c,
                    '--metalink-file=-',
                    '--file-allocation=none',
                    '--auto-file-renaming=false',
-                   '--dir={0}'.format(self.archive_dir),
+                   '--dir={0}'.format(partial_dir),
                    '--max-concurrent-downloads={0}'.format(num_concurrent),
                    '--no-conf',
+                   '--remote-time=true',
+                   '--auto-save-interval=0',
+                   '--continue',
                    '--split=1',           # For 1.9.x release.
                    '--metalink-servers=1' # For 1.9.x release.
                    ]
@@ -103,7 +108,26 @@ class AptMetalink:
         make_metalink(proc.stdin, pkgs)
         proc.stdin.close()
         proc.wait()
-        return proc.returncode == 0
+        link_success = True
+        # Link archives/partial/*.deb to archives/
+        for pkg in pkgs:
+            filename = get_filename(pkg.candidate)
+            dst = os.path.join(self.archive_dir, filename)
+            src = os.path.join(partial_dir, filename)
+            ctrl_file = ''.join([src, '.aria2'])
+            # If control file exists, we assume download is not
+            # complete.
+            if os.path.exists(ctrl_file):
+                continue
+            try:
+                # Making hard link because aria2c needs file in
+                # partial directory to know download is complete
+                # in the next invocation.
+                os.link(src, dst)
+            except OSError, e:
+                print "Failed to link archive file", e
+                link_success = False
+        return proc.returncode == 0 and link_success
 
 def get_hash(version):
     if version.sha256:
