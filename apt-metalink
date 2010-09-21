@@ -89,6 +89,8 @@ class AptMetalink:
                    '--split=1',           # For 1.9.x release.
                    '--metalink-servers=1' # For 1.9.x release.
                    ]
+        if self.opts.hash_check:
+            cmdline.append('--check-integrity=true')
 
         http_proxy = apt_pkg.config.find('Acquire::http::Proxy')
         https_proxy = apt_pkg.config.find('Acquire::https::Proxy', http_proxy)
@@ -213,11 +215,15 @@ def main():
                       help=("Instead of fetching the files, Metalink XML"
                             " document is printed. Metalink XML document"
                             " contains package's URIs and checksums."))
+    parser.add_option('--hash-check', action="store_true",
+                      help=("Check hash of already downloaded files."
+                            " If hash check fails, download file again."))
     parser.add_option('-x', '--aria2c' ,dest='aria2c',
                       help="path to aria2c executable [default: %default]")
 
     parser.set_defaults(download_only=False)
     parser.set_defaults(print_metalink=False)
+    parser.set_defaults(hash_check=False)
     parser.set_defaults(aria2c='/usr/bin/aria2c')
     opts, args = parser.parse_args()
 
