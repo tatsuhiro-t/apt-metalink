@@ -60,7 +60,7 @@ class AptMetalink:
             if ans and ans.lower() != 'y':
                 print "Abort."
                 return
-            pkgs = [pkg for pkg in pkgs if self._need_download(pkg)]
+            pkgs = [pkg for pkg in pkgs if not pkg.marked_delete]
             if self.opts.print_metalink:
                 make_metalink(sys.stdout, pkgs)
                 return
@@ -76,15 +76,15 @@ class AptMetalink:
             return True
 
         cmdline = [self.opts.aria2c,
-             '--metalink-file=-',
-             '--file-allocation=none',
-             '--check-integrity=true',
-             '--dir={0}'.format(self.archive_dir),
-             '--max-concurrent-downloads={0}'.format(num_concurrent),
-             '--no-conf',
-             '--split=1',           # For 1.9.x release.
-             '--metalink-servers=1' # For 1.9.x release.
-             ]
+                   '--metalink-file=-',
+                   '--file-allocation=none',
+                   '--auto-file-renaming=false',
+                   '--dir={0}'.format(self.archive_dir),
+                   '--max-concurrent-downloads={0}'.format(num_concurrent),
+                   '--no-conf',
+                   '--split=1',           # For 1.9.x release.
+                   '--metalink-servers=1' # For 1.9.x release.
+                   ]
 
         http_proxy = apt_pkg.config.find('Acquire::http::Proxy')
         https_proxy = apt_pkg.config.find('Acquire::https::Proxy', http_proxy)
@@ -105,28 +105,6 @@ class AptMetalink:
         proc.stdin.close()
         proc.wait()
         return proc.returncode == 0
-
-    def _need_download(self, pkg):
-        if pkg.marked_delete:
-            return False
-        version = pkg.candidate
-        hashtype, hashvalue = get_hash(version)
-        filepath = os.path.join(self.archive_dir, get_filename(version))
-        if os.path.exists(filepath):
-            try:
-                with open(filepath) as f:
-                    hashfunc = hashlib.new(hashtype)
-                    while True:
-                        bytes = f.read(4096)
-                        if not bytes:
-                            break
-                        hashfunc.update(bytes)
-                    return hashfunc.hexdigest() != hashvalue
-            except IOError, e:
-                print "Error", e
-                return False
-        else:
-            return True
 
 def get_hash(version):
     if version.sha256:
