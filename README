@@ -61,6 +61,8 @@ Usage
     --print-metalink      Instead of fetching the files, Metalink XML document
                           is printed. Metalink XML document contains package's
                           URIs and checksums.
+    --hash-check          Check hash of already downloaded files. If hash check
+                          fails, download file again.
     -x ARIA2C, --aria2c=ARIA2C
                           path to aria2c executable [default: /usr/bin/aria2c]
 
