@@ -12,12 +12,12 @@ packages are usually available in more than one server.  apt-get only
 uses 1 URI to download package in sequential manner.  apt-metalink
 uses the advantage of availability of these mirrors.  apt-metalink
 establishes 1 connection per mirror and downloads packages from all
-mirrors in sources.list. This is as if running apt-get with mutually
-exclusive subset of packages at the same time.  This parallelism
-shortens whole download time. The difference of parallel transfer and
-sequential transfer gets bigger when the number of packages to
-download increases.  The connection to the remote server is reused
-accross the download, so it is very efficient.
+mirrors in sources.list. This is as if running apt-get with different
+mirror and mutually exclusive subset of packages at the same time.
+This parallelism shortens whole download time. The difference of
+parallel transfer and sequential transfer gets bigger when the number
+of packages to download increases.  The connection to the remote
+server is reused accross the download, so it is very efficient.
 
 Prerequisites
 -------------
@@ -65,8 +65,8 @@ Usage
                           path to aria2c executable [default: /usr/bin/aria2c]
 
 Currently, apt-metalink offers very basic subset of features that
-apt-get has. But I think this is enough to see what apt-metalink
-offers and its possibility.
+apt-get has: upgrade, dist-upgrade and install. But I think this is
+enough to see what apt-metalink offers and its possibility.
 
 License
 -------
