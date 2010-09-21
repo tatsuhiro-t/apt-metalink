@@ -178,6 +178,14 @@ def pprint_names(msg, names):
                             break_long_words=False,
                             break_on_hyphens=False)
 
+def unit_str(val):
+    if val > 1000*1000:
+        return '{0:.1f}MB'.format(val/1000/1000)
+    elif val > 1000:
+        return '{0:.0f}kB'.format(round(val/1000))
+    else:
+        return '{0:.0f}B'.format(val)
+
 def _print_update_summary(cache, pkgs):
     delete_names = []
     install_names = []
@@ -197,14 +205,14 @@ def _print_update_summary(cache, pkgs):
            ' {3} not upgraded')\
            .format(len(upgrade_names), len(install_names), len(delete_names),
                    cache.keep_count)
-    print 'Need to get {0:.1f}MB of archives.'\
-        .format(cache.required_download/1000/1000)
+    print 'Need to get {0} of archives.'\
+        .format(unit_str(cache.required_download))
     if cache.required_space < 0:
-        print ('After this operation, {0:.1f}MB disk space will be freed.'\
-                   .format(-cache.required_space/1000/1000))
+        print 'After this operation, {0} disk space will be freed.'\
+            .format(unit_str(-cache.required_space))
     else:
-        print ('After this operation, {0:.1f}MB of additional disk space will'
-               ' be used.').format(cache.required_space/1000/1000)
+        print ('After this operation, {0} of additional disk space will'
+               ' be used.').format(unit_str(cache.required_space))
 
 def main():
     usage = 'Usage: %prog [options] {upgrade | dist-upgrade | install pkg ...}'
