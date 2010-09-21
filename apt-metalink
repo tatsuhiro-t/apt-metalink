@@ -146,6 +146,7 @@ def pprint_names(msg, names):
     if names:
         print msg
         print textwrap.fill(' '.join(names),
+                            width=78,
                             initial_indent='  ',
                             subsequent_indent='  ',
                             break_long_words=False,
