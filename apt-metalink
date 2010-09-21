@@ -51,9 +51,9 @@ class AptMetalink:
         self._get_changes()
 
     def _get_changes(self):
-        pkgs = self.cache.get_changes()
+        pkgs = sorted(self.cache.get_changes(), key=lambda p:p.name)
         if pkgs:
-            print_update_summary(self.cache)
+            _print_update_summary(self.cache, pkgs)
             sys.stdout.write("Do you want to continue [Y/n]?")
             ans = sys.stdin.readline().strip()
             if ans and ans.lower() != 'y':
@@ -144,7 +144,6 @@ def guess_concurrent(pkgs):
 
 def pprint_names(msg, names):
     if names:
-        names.sort()
         print msg
         print textwrap.fill(' '.join(names),
                             initial_indent='  ',
@@ -152,12 +151,12 @@ def pprint_names(msg, names):
                             break_long_words=False,
                             break_on_hyphens=False)
 
-def print_update_summary(cache):
+def _print_update_summary(cache, pkgs):
     delete_names = []
     install_names = []
     upgrade_names = []
     # TODO marked_downgrade, marked_keep, marked_reinstall
-    for pkg in cache.get_changes():
+    for pkg in pkgs:
         if pkg.marked_delete:
             delete_names.append(pkg.name)
         elif pkg.marked_install:
