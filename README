@@ -45,7 +45,7 @@ voids the power of apt-metalink.  For example, adding 3 debian mirror:
 See sources.list(5) for more details.
 
 apt-metalink uses them all and download packages concurrently, which
-makes faster download.
+makes download faster.
 
 Currently, apt-metalink passes the number of mirrors as -j option to
 aria2c.
