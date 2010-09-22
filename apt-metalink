@@ -143,7 +143,7 @@ class AptMetalink:
             hash_type, hash_value = get_hash(version)
             try:
                 return check_hash(path, hash_type, hash_value)
-            except OSError, e:
+            except IOError, e:
                 if e.errno != errno.ENOENT:
                     print "Failed to check hash", e
                 return False
