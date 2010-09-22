@@ -73,7 +73,7 @@ class AptMetalink:
         if self.opts.download_only:
             print "Download complete and in download only mode"
         else:
-            self.cache.commit()
+            self.cache.commit(apt.progress.text.AcquireProgress())
 
     def _download(self, pkgs, num_concurrent=1):
         if not pkgs:
