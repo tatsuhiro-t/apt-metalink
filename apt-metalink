@@ -130,7 +130,8 @@ class AptMetalink:
                 # in the next invocation.
                 os.rename(src, dst)
             except OSError, e:
-                print "Failed to move archive file", e
+                if e.errno != errno.ENOENT:
+                    print "Failed to move archive file", e
                 link_success = False
         return proc.returncode == 0 and link_success
 
