@@ -22,6 +22,7 @@ import textwrap
 import sys
 import optparse
 import errno
+import hashlib
 
 import apt
 import apt_pkg
@@ -61,7 +62,9 @@ class AptMetalink:
             if ans and ans.lower() != 'y':
                 print "Abort."
                 return
-            pkgs = [pkg for pkg in pkgs if not pkg.marked_delete]
+            pkgs = [pkg for pkg in pkgs if not pkg.marked_delete and \
+                        not self._file_downloaded(pkg, hash_check = \
+                                                      self.opts.hash_check)]
             if self.opts.print_metalink:
                 make_metalink(sys.stdout, pkgs)
                 return
@@ -125,11 +128,37 @@ class AptMetalink:
                 # Making hard link because aria2c needs file in
                 # partial directory to know download is complete
                 # in the next invocation.
-                os.link(src, dst)
+                os.rename(src, dst)
             except OSError, e:
-                print "Failed to link archive file", e
+                print "Failed to move archive file", e
                 link_success = False
         return proc.returncode == 0 and link_success
+
+    def _file_downloaded(self, pkg, hash_check=False):
+        candidate = pkg.candidate
+        path = os.path.join(self.archive_dir, get_filename(candidate))
+        if not os.path.exists(path) or os.stat(path).st_size != candidate.size:
+            return False
+        if hash_check:
+            hash_type, hash_value = get_hash(version)
+            try:
+                return check_hash(path, hash_type, hash_value)
+            except OSError, e:
+                if e.errno != errno.ENOENT:
+                    print "Failed to check hash", e
+                return False
+        else:
+            return True
+
+def check_hash(path, hash_type, hash_value):
+    hash_fun = hashlib.new(hash_type)
+    with open(path) as f:
+        while 1:
+            bytes = f.read(4096)
+            if not bytes:
+                break
+            hash_fun.update(bytes)
+    return hash_fun.hexdigest() != hash_value
 
 def get_hash(version):
     if version.sha256:
