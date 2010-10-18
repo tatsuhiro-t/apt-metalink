@@ -31,6 +31,16 @@ I strongly recommend to use the latest release of aria2. The latest
 version of aria2 is 1.10.3 at the time of writing.
 You can download aria2 from http://aria2.sourceforge.net/
 
+apt-metalink also depends on python-apt package.
+You can install python-apt using:
+
+    apt-get install python-apt
+
+But I think it is usually already in your system.  If you see that
+apt-metalink reports there are packages to update but the total size
+is 0 byte, then it is a sign that python-apt needs to be updated.
+Please update python-apt first in this case.
+
 Edit sources.list
 -----------------
 
