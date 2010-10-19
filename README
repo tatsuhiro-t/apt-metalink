@@ -28,7 +28,7 @@ You can install aria2 using:
     apt-get install aria2
 
 I strongly recommend to use the latest release of aria2. The latest
-version of aria2 is 1.10.3 at the time of writing.
+version of aria2 is 1.10.5 at the time of writing.
 You can download aria2 from http://aria2.sourceforge.net/
 
 apt-metalink also depends on python-apt package.
