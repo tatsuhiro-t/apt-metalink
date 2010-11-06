@@ -141,7 +141,7 @@ class AptMetalink:
         if not os.path.exists(path) or os.stat(path).st_size != candidate.size:
             return False
         if hash_check:
-            hash_type, hash_value = get_hash(version)
+            hash_type, hash_value = get_hash(pkg.candidate)
             try:
                 return check_hash(path, hash_type, hash_value)
             except IOError, e:
@@ -159,7 +159,7 @@ def check_hash(path, hash_type, hash_value):
             if not bytes:
                 break
             hash_fun.update(bytes)
-    return hash_fun.hexdigest() != hash_value
+    return hash_fun.hexdigest() == hash_value
 
 def get_hash(version):
     if version.sha256:
