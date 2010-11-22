@@ -1,11 +1,10 @@
 apt-metalink
 ============
 
-apt-metalink allows you to download deb packages from several sources
-concurrently and makes upgrade process faster -- if you have fast
-internet connection ;) apt-metalink uses python-apt to interface apt
-infrastructure and aria2 as download back-end. Metalink is used to
-feed package list to aria2.
+apt-metalink makes 'apt-get' faster by downloading Debian/Ubuntu
+packages from several servers concurrently. apt-metalink uses
+python-apt to interface apt infrastructure and aria2 for download
+backend. Metalink is used to feed package list to aria2.
 
 If multiple debian mirror is specified in /etc/apt/sources.list,
 packages are usually available in more than one server.  apt-get only
@@ -22,17 +21,16 @@ server is reused accross the download, so it is very efficient.
 Prerequisites
 -------------
 
-apt-metalink uses aria2 as downloader.
-You can install aria2 using:
+apt-metalink uses aria2 as download backend.
+You can install aria2 with following command:
 
     apt-get install aria2
 
-I strongly recommend to use the latest release of aria2. The latest
-version of aria2 is 1.10.5 at the time of writing.
-You can download aria2 from http://aria2.sourceforge.net/
+I strongly recommend to use the latest release of aria2.  You can
+download aria2 from http://aria2.sourceforge.net/
 
 apt-metalink also depends on python-apt package.
-You can install python-apt using:
+You can install python-apt with following command:
 
     apt-get install python-apt
 
@@ -91,3 +89,4 @@ References
  * http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=500653
  * https://bugs.launchpad.net/ubuntu/+source/apt/+bug/275994
  * http://tools.ietf.org/html/rfc5854 The Metalink Download Description Format
+ * http://aria2.sourceforge.net/ aria2 project
