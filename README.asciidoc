@@ -24,7 +24,9 @@ Prerequisites
 apt-metalink uses aria2 as download backend.
 You can install aria2 with following command:
 
-    apt-get install aria2
+---------------------
+apt-get install aria2
+---------------------
 
 I strongly recommend to use the latest release of aria2.  You can
 download aria2 from http://aria2.sourceforge.net/
@@ -32,7 +34,9 @@ download aria2 from http://aria2.sourceforge.net/
 apt-metalink also depends on python-apt package.
 You can install python-apt with following command:
 
-    apt-get install python-apt
+--------------------------
+apt-get install python-apt
+--------------------------
 
 But I think it is usually already in your system.  If you see that
 apt-metalink reports there are packages to update but the total size
@@ -46,9 +50,11 @@ sources.list is ususally located at /etc/apt/sources.list.  Add
 several fast debian mirror server to it.  Don't add slow mirror. It
 voids the power of apt-metalink.  For example, adding 3 debian mirror:
 
-  deb http://MIRROR1/debian/ unstable main contrib non-free
-  deb http://MIRROR2/debian/ unstable main contrib non-free
-  deb http://MIRROR3/debian/ unstable main contrib non-free
+---------------------------------------------------------
+deb http://MIRROR1/debian/ unstable main contrib non-free
+deb http://MIRROR2/debian/ unstable main contrib non-free
+deb http://MIRROR3/debian/ unstable main contrib non-free
+---------------------------------------------------------
 
 See sources.list(5) for more details.
 
@@ -61,6 +67,7 @@ aria2c.
 Usage
 -----
 
+--------------------------------------------------------------------------------
   Usage: apt-metalink [options] {upgrade | dist-upgrade | install pkg ...}
 
   Options:
@@ -73,6 +80,7 @@ Usage
                           fails, download file again.
     -x ARIA2C, --aria2c=ARIA2C
                           path to aria2c executable [default: /usr/bin/aria2c]
+--------------------------------------------------------------------------------
 
 Currently, apt-metalink offers very basic subset of features that
 apt-get has: upgrade, dist-upgrade and install. But I think this is
