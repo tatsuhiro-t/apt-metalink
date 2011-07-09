@@ -65,8 +65,9 @@ class AptMetalink:
             pkgs = [pkg for pkg in pkgs if not pkg.marked_delete and \
                         not self._file_downloaded(pkg, hash_check = \
                                                       self.opts.hash_check)]
-            if self.opts.print_metalink:
-                make_metalink(sys.stdout, pkgs)
+            if self.opts.metalink_out:
+                with open(self.opts.metalink_out, 'wb') as f:
+                    make_metalink(f, pkgs)
                 return
             if not self._download(pkgs, num_concurrent=guess_concurrent(pkgs)):
                 print "Some download fails. apt_pkg will take care of them."
@@ -249,10 +250,11 @@ def main():
     parser = optparse.OptionParser(usage=usage)
     parser.add_option('-d', '--download-only', action='store_true',
                       help="Download only. [default: %default]")
-    parser.add_option('--print-metalink', action='store_true',
-                      help=("Instead of fetching the files, Metalink XML"
-                            " document is printed. Metalink XML document"
-                            " contains package's URIs and checksums."))
+    parser.add_option('--metalink-out', metavar="FILE",
+                      help=("""\
+Instead of fetching the files, Metalink XML document is saved to given
+FILE. Metalink XML document contains package's URIs and checksums.
+"""))
     parser.add_option('--hash-check', action="store_true",
                       help=("Check hash of already downloaded files."
                             " If hash check fails, download file again."))
@@ -260,7 +262,6 @@ def main():
                       help="path to aria2c executable [default: %default]")
 
     parser.set_defaults(download_only=False)
-    parser.set_defaults(print_metalink=False)
     parser.set_defaults(hash_check=False)
     parser.set_defaults(aria2c='/usr/bin/aria2c')
     opts, args = parser.parse_args()
