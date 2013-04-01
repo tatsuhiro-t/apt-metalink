@@ -90,8 +90,7 @@ class AptMetalink:
                    '--remote-time=true',
                    '--auto-save-interval=0',
                    '--continue',
-                   '--split=1',           # For 1.9.x release.
-                   '--metalink-servers=1' # For 1.9.x release.
+                   '--split=1'
                    ]
         if self.opts.hash_check:
             cmdline.append('--check-integrity=true')
