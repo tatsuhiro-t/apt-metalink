@@ -16,7 +16,7 @@ mirror and mutually exclusive subset of packages at the same time.
 This parallelism shortens whole download time. The difference of
 parallel transfer and sequential transfer gets bigger when the number
 of packages to download increases.  The connection to the remote
-server is reused accross the download, so it is very efficient.
+server is reused across the download, so it is very efficient.
 
 Prerequisites
 -------------
