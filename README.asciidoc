@@ -29,7 +29,7 @@ apt-get install aria2
 ---------------------
 
 I strongly recommend to use the latest release of aria2.  You can
-download aria2 from http://aria2.sourceforge.net/
+download aria2 from https://aria2.github.io/
 
 apt-metalink also depends on python-apt package.
 You can install python-apt with following command:
@@ -94,7 +94,7 @@ GPLv3
 References
 ----------
 
- * http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=500653
+ * https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=500653
  * https://bugs.launchpad.net/ubuntu/+source/apt/+bug/275994
- * http://tools.ietf.org/html/rfc5854 The Metalink Download Description Format
- * http://aria2.sourceforge.net/ aria2 project
+ * https://tools.ietf.org/html/rfc5854 The Metalink Download Description Format
+ * https://aria2.github.io/ aria2 project
