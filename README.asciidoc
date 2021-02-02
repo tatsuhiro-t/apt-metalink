@@ -3,7 +3,7 @@ apt-metalink
 
 apt-metalink makes 'apt-get' faster by downloading Debian/Ubuntu
 packages from several servers concurrently. apt-metalink uses
-python-apt to interface apt infrastructure and aria2 for download
+python3-apt to interface apt infrastructure and aria2 for download
 backend. Metalink is used to feed package list to aria2.
 
 If multiple debian mirror is specified in /etc/apt/sources.list,
@@ -31,17 +31,17 @@ apt-get install aria2
 I strongly recommend to use the latest release of aria2.  You can
 download aria2 from https://aria2.github.io/
 
-apt-metalink also depends on python-apt package.
+apt-metalink also depends on python3-apt package.
 You can install python-apt with following command:
 
---------------------------
-apt-get install python-apt
---------------------------
+---------------------------
+apt-get install python3-apt
+---------------------------
 
 But I think it is usually already in your system.  If you see that
 apt-metalink reports there are packages to update but the total size
-is 0 byte, then it is a sign that python-apt needs to be updated.
-Please update python-apt first in this case.
+is 0 byte, then it is a sign that python3-apt needs to be updated.
+Please update python3-apt first in this case.
 
 Edit sources.list
 -----------------
