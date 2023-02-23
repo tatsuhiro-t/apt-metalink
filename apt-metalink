@@ -154,14 +154,9 @@ class AptMetalink:
             return True
 
 def check_hash(path, hash_type, hash_value):
-    hash_fun = hashlib.new(hash_type)
-    with open(path) as f:
-        while 1:
-            bytes = f.read(4096)
-            if not bytes:
-                break
-            hash_fun.update(bytes)
-    return hash_fun.hexdigest() == hash_value
+    with open(path, 'rb') as f:
+        digest = hashlib.file_digest(f, hash_type)
+    return digest.hexdigest() == hash_value
 
 def get_hash(version):
     if version.sha256:
