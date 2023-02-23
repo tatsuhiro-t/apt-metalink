@@ -171,7 +171,8 @@ def get_hash(version):
 def get_filename(version):
     # TODO apt-get man page said filename and basename in URI
     # could be different.
-    return os.path.basename(version.filename)
+    quoted_version = version.version.replace(':', '%3a')
+    return f'{version.package.shortname}_{quoted_version}_{version.architecture}.deb'
 
 def make_metalink(out, pkgs):
     out.write('<?xml version="1.0" encoding="UTF-8"?>')
