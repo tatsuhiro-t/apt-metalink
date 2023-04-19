@@ -43,6 +43,35 @@ apt-metalink reports there are packages to update but the total size
 is 0 byte, then it is a sign that python3-apt needs to be updated.
 Please update python3-apt first in this case.
 
+Obtain list of fastest mirrors 
+------------------------------
+There numerous ways to find the fastest apt mirrors. In this 
+example, we'll using netselect: 
+
+----------------------------------------------------------
+apt-get install netselect
+netselect unstable
+<cut>
+The fastest 10 servers seem to be:
+
+	http://ftp.us.debian.org/debian/
+	http://mirrors.edge.kernel.org/debian/
+	http://mirror.steadfast.net/debian/
+	http://mirror.cc.columbia.edu/debian/
+	http://mirrors.gigenet.com/debian/
+	http://ftp.us.debian.org/debian/
+	http://debian.csail.mit.edu/debian/
+	http://mirror.us.leaseweb.net/debian/
+	http://mirror.cogentco.com/debian/
+	http://debian.mirror.iweb.ca/debian/
+
+Of the hosts tested we choose the fastest valid for HTTP:
+        http://ftp.us.debian.org/debian/
+
+Writing sources.list.
+Done.
+----------------------------------------------------------
+
 Edit sources.list
 -----------------
 
